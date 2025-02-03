@@ -15,8 +15,6 @@ const Login = () => {
       if (session) {
         console.log(session);
         router.push("/dashboard");  // Redirect to dashboard if session exists
-      }else{
-        router.push("/login");
       }
     };
 
@@ -39,7 +37,7 @@ const Login = () => {
 
       if (session) {
         // Redirect user to dashboard after successful login
-        router.push("/secret-page-1");
+        router.push("/dashboard");
       } else {
         setError("Session could not be established.");
       }

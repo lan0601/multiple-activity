@@ -14,9 +14,7 @@ const Login = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         console.log(session);
-        router.push("/dashboard");  // Redirect to dashboard if session exists
-      }else{
-        router.push("/login");
+        router.push("/secret-page-1");  // Redirect to dashboard if session exists
       }
     };
 
@@ -98,6 +96,6 @@ const Login = () => {
       </div>
     </div>
   );
-};
+};Q
 
 export default Login;

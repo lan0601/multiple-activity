@@ -1,57 +1,43 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Check if the user is already logged in and redirect
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        console.log(session);
-        router.push("/dashboard");  // Redirect to dashboard if session exists
-      }else{
-        router.push("/login");
-      }
-    };
-
-    checkSession();
-  }, [router]);
-
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const { user, error } = await supabase.auth.signInWithPassword({
+      // Sign up the user using Supabase auth
+      const { user, error } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (error) throw error;
 
-      // Check for session after login
-      const { data: { session } } = await supabase.auth.getSession();
+      // Optionally, handle user-specific data here (e.g., save additional user info in a database)
 
-      if (session) {
-        // Redirect user to dashboard after successful login
-        router.push("/secret-page-1");
-      } else {
-        setError("Session could not be established.");
-      }
+      // Redirect to login page after successful registration
+      router.push("/");
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+      <h2>Register</h2>
+      <form onSubmit={handleRegister}>
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="email">Email:</label>
           <input
@@ -75,15 +61,16 @@ const Login = () => {
           />
         </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" style={{ padding: "10px", width: "100%" }}>
-          Login
+        <button type="submit" style={{ padding: "10px", width: "100%" }} disabled={loading}>
+          {loading ? "Registering..." : "Register"}
         </button>
       </form>
+
       <div style={{ marginTop: "20px", textAlign: "center" }}>
         <p>
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <button
-            onClick={() => router.push("/register")} // Redirect to register page
+            onClick={() => router.push("/")} // Redirect to login page
             style={{
               background: "none",
               border: "none",
@@ -92,7 +79,7 @@ const Login = () => {
               textDecoration: "underline",
             }}
           >
-            Register here
+            Login here
           </button>
         </p>
       </div>
@@ -100,4 +87,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
